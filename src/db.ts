@@ -49,7 +49,6 @@ export class MockDB {
     }
 
     getList(id: string) {
-        console.log('list', id, this.lists.find((l) => l.id === id))
         return this.lists.find((l) => l.id === id);
     }
 
@@ -66,8 +65,26 @@ export class MockDB {
         this.lists = [...this.lists, l];
     }
 
+    addTodo(listId: string, label: string) {
+        const todo: TodoData = {
+            id: window.crypto.randomUUID(),
+            label,
+            state: 'tbd',
+        }
+        
+        this.lists = this.lists.map(l => l.id === listId
+            ? { ...l, todos: [...l.todos, todo] }
+            : l);
+    }
+
     deleteList(id: string) {
         this.lists = this.lists.filter((l) => l.id !== id);
+    }
+
+    deleteTodo(idList: string, id: string) {
+        this.lists = this.lists.map(l => l.id === idList
+            ? { ...l, todos: l.todos.filter(t => t.id !== id) }
+            : l);
     }
 
     editList(id: string, label: string) {
@@ -77,7 +94,6 @@ export class MockDB {
     }
 
     editTodo(idList: string, id: string, todo: Partial<TodoData>) {
-        console.log(todo, this.lists)
         this.lists = this.lists.map(l => l.id === idList
             ? ({ ...l, todos: l.todos.map(t => t.id === id ? ({ ...t, ...todo }) : t) })
             : l);
