@@ -48,6 +48,15 @@ export class MockDB {
         return this.lists;
     }
 
+    getList(id: string) {
+        console.log('list', id, this.lists.find((l) => l.id === id))
+        return this.lists.find((l) => l.id === id);
+    }
+
+    getTodos(listId: string) {
+        return this.getList(listId)?.todos ?? [];
+    }
+
     addList(label: string) {
         const l: ListData = {
             id: window.crypto.randomUUID(),
@@ -56,19 +65,48 @@ export class MockDB {
         }
         this.lists = [...this.lists, l];
     }
+
+    deleteList(id: string) {
+        this.lists = this.lists.filter((l) => l.id !== id);
+    }
+
+    editList(id: string, label: string) {
+        this.lists = this.lists.map((l) => l.id === id
+            ? { ...l, label }
+            : l);
+    }
+
+    editTodo(idList: string, id: string, todo: Partial<TodoData>) {
+        console.log(todo, this.lists)
+        this.lists = this.lists.map(l => l.id === idList
+            ? ({ ...l, todos: l.todos.map(t => t.id === id ? ({ ...t, ...todo }) : t) })
+            : l);
+    }
 }
 
 export function useLists() {
     const db = MockDB.getInstance();
     const [lists, setLists] = useState(db.getLists());
 
-    const addList = (label:string) => { 
+    const addList = (label: string) => {
         db.addList(label);
+        setLists(db.getLists());
+    }
+
+    const deleteList = (id: string) => {
+        db.deleteList(id);
+        setLists(db.getLists());
+    }
+
+    const editList = (id: string, label: string) => {
+        db.editList(id, label);
         setLists(db.getLists());
     }
 
     return {
         lists,
         addList,
+        deleteList,
+        editList,
     }
 }

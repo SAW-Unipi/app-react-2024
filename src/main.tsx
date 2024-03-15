@@ -4,6 +4,7 @@ import App from './App'
 import './index.css'
 import { RouterProvider, createBrowserRouter, useLoaderData } from 'react-router-dom'
 import { ListsPage } from './Lists'
+import { TodoPage } from './Todo'
 
 const router = createBrowserRouter([
   { path: '/', element: <ListsPage />, errorElement: <p>Route non esistente!</p> },
@@ -20,9 +21,3 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
     <RouterProvider router={router} />
   </React.StrictMode>,
 )
-
-function TodoPage() {
-  const id = useLoaderData() as string;
-
-  return <p>Todo Page {id}</p>;
-}
